@@ -17,7 +17,7 @@ Most of these failures are **silent**. The remote key reaches the app and is dro
 2. **Client-side or server-side?** If the ads are stitched into the stream by a server (SSAI, for example Google IMA DAI or Yospace), this skill does not apply.
 3. **Which content player?** Find where the app creates its `VideoPlayer` (directly, or the one Shaka plays through) and where it draws the `KeplerVideoSurfaceView`. The ad players are added next to it.
 4. **Where do the ads come from?** A VMAP tag, or a list of VAST tags with times. Is the content DRM-protected? Then use clear (non-DRM) ad creatives (see [architecture.md](references/architecture.md#drm-and-memory)).
-5. **Run the static check:** `node references/scripts/audit.mjs <app-dir>`. No dependencies; exits 1 on findings. It only finds what is visible in files (manifest entries, `http://` media, deprecated APIs, a `playpause` handler). Read each finding in context.
+5. **Run the static check:** `node references/scripts/audit.mjs <app-dir>` (in a monorepo, on the repository root, so it also sees shared packages). No dependencies; exits 1 on findings. It only finds what is visible in files (manifest entries, `http://` media, deprecated APIs, a `playpause` handler). Read each finding in context.
 
 ## The pattern in short
 

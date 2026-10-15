@@ -33,7 +33,7 @@ It checks the frontmatter (name, description length, "Not for" boundary), that `
 
 | Scenario | Without skill | With skill |
 | --- | --- | --- |
-| S1 Add a pre-roll to the multi-TV sample | _/7 | _/7 |
+| S1 Add a pre-roll to the multi-TV sample | not run | 7/7 (16.10.2026, see below) |
 | S2 The remote does nothing during the ad | _/5 | _/5 |
 | S3 The movie flashes between two ads | _/5 | _/5 |
 | S4 Tracking pixels never arrive | _/5 | _/5 |
@@ -52,3 +52,25 @@ _To be filled: advice from the run without the skill that would fail on a Fire T
 - The device numbers in `references/` come from one Fire TV Stick 4K Select (Vega OS 2.0, Vega SDK 0.24) in October 2026. They are marked as measured, with the device.
 - The audit script only sees files. A clean audit does not prove that ads, media controls or tracking work on a device.
 - Alexa phrases, visual flashes between ads and loudness need a person; the skill tells the agent to hand these over instead of claiming them.
+
+## Run log
+
+### S1 with the skill, 16.10.2026
+
+- **Setup:** a fresh coding agent got the S1 prompt, a clean copy of `AmazonAppDev/react-native-multi-tv-app-sample` at `d435082` and this skill without the `evals/` folder. No web access. No Fire TV device.
+- **What it built:** its own implementation (no library): `@dailymotion/vast-client`, `@dailymotion/vmap` and `@xmldom/xmldom` in the Vega app, seven new `*.vega.ts(x)` files and changes to `PlayerScreen.vega.tsx`. The Vega debug build passed; a Node test with a fake player and a local VMAP/VAST/pixel server passed. Nothing ran on a device.
+- **Grading:** by the skill's author, not blind; read against the diff and the answer.
+
+| Assertion | Result | Why |
+| --- | --- | --- |
+| A1 Vega files only | pass | New code in `*.vega.ts(x)`; dependencies only in `apps/vega`; other platforms untouched. |
+| A2 Separate ad player and surface, content after the pre-roll | pass | Two ad players on their own surfaces; content starts at the break's end. |
+| A3 Manifest checked, media controls focus moved and given back | pass | Entries already present, not duplicated; focus to the ad after its first frame, back to the content handler after the break. |
+| A4 No `DOMParser`, no `Image` | pass | xmldom and an `Image` shim with `fetch`. |
+| A5 Impression on first frame, content on any error | pass | Impression on `playing`; 4 s request and 8 s plan budgets; watchdogs 5/8/10/30 s. |
+| A6 No device claims, device checks listed | pass | 15 device checks listed. |
+| A7 Ad surfaces after the content surface | pass | Ad surfaces mounted after the content surface's `onSurfaceViewCreated`. |
+
+**Gaps the run found in the skill, now fixed:** vast-client's default URL handler and `window.location`; how to show one ad surface over the other; the audit in a monorepo; requesting before Play when only Vega files may change; unknown app macros; play/pause while the pre-roll loads; the `[ASSETURI]` fix; `scalingmode` (default `'strech'`).
+
+**Not done yet:** the same prompt without the skill, and the trigger test.

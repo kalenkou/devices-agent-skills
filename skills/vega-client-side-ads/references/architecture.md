@@ -29,6 +29,8 @@ The guide does not mention media controls. Without them the remote and Alexa do 
 - Keep the content surface mounted during the break. The paused content frame stays under the ad.
 - Bring the active ad surface on top only when that ad fires `playing`. Until then the viewer sees the content's last frame, not black.
 - Hide the app's own player controls and buffering spinner while an ad is on screen.
+- **Show and hide ad surfaces by position, not by mounting.** Since `zIndex` does not reorder video surfaces, keep both ad surfaces mounted and move the hidden one off screen (for example `left: -1.2 × screen width`). Unmounting destroys the native surface and costs a black frame at the next ad. *Measured* with this method: pods of 2–3 ads with no movie frame between them.
+- Set `scalingmode="fit"` on ad surfaces. The `KeplerVideoSurfaceView` default is `'strech'` (spelled so in the typings), which can distort an ad with another aspect ratio.
 
 ## Sequence of one break
 

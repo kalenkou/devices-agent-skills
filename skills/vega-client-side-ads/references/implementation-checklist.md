@@ -24,6 +24,8 @@ if (typeof g.Image === 'undefined') {
 }
 ```
 
+- **Requests:** give vast-client your own `urlHandler` (a `fetch` with a timeout). Its default handler, in the 6.5.0 source, reads `window.location.protocol` whenever `window` exists; on Vega `window` exists, so a missing `window.location` would make every request fail. *Read in the source, not measured on the device.*
+
 **Pass:** a test pixel URL on your own server is hit once per event, with HTTP 200.
 
 ## 2. Ad requests
@@ -33,8 +35,10 @@ if (typeof g.Image === 'undefined') {
 - Fill macros before the request: `[CACHEBUSTING]`, `[TIMESTAMP]`, and where your ad server wants them `[IFA]`, `[IFATYPE]`, `[LIMITADTRACKING]`, `[BREAKMAXADS]`, `[BREAKMAXDURATION]`.
 - **Advertising ID:** read it with `@amazon-devices/kepler-adid-retriever`. Check the user's opt-out first (Amazon's Advertising ID policy); on opt-out or any error send no ID and `LIMITADTRACKING=1`. Without `[[wants.service]] id = "com.amazon.admanager.service.main"` in `manifest.toml` the ID service reports "do not track" for every user.
 - Do not pass the Advertising ID in child profiles or child-directed parts of the app.
+- App macros (for example `[TITLEID]`) are agreed with your ad server; agree what to send when a value is unknown (empty or a fixed value) instead of guessing.
 - Request the pre-roll on the title's page, before Play. *Measured,* ad server answering in 600 ms per request, 10 cold launches each: Play → pre-roll's first frame median 2.4 s without this, 1.7 s with it.
 - Request each mid-roll ahead of time (15 s before the break worked).
+- In a monorepo the title's page is often shared by all platforms. If only Vega files may change, request on the player screen instead and accept the slower first frame; say so to the user.
 
 **Pass:** a slow or dead ad server never delays the content by more than the time budget.
 
@@ -53,7 +57,7 @@ if (typeof g.Image === 'undefined') {
 - Ads with a `sequence` attribute form a **pod**; play them in `sequence` order, not document order. *Measured:* Google's sample returns pod creatives in a different order on each request.
 - Ads without `sequence` are a buffet: use them to fill a pod slot whose ad failed.
 - Choose a `MediaFile` the player can play: progressive MP4 (H.264/AAC) is the safe choice; cap the height to the screen. Prefer `https://`. A plain `http://` file fails on Vega unless its host is in the manifest's cleartext list ([pitfalls.md](pitfalls.md#ad-or-content-is-a-black-screen)).
-- Put the URL of the file that actually plays into `[ASSETURI]`. In our use, vast-client alone filled it with the first file of the list.
+- Put the URL of the file that actually plays into `[ASSETURI]`. In our use, vast-client alone filled it with the first file of the list. Fix: pass `ASSETURI` in the macros of each tracker call, or move the chosen file to the first place of the creative's `mediaFiles` before creating the tracker.
 
 **Pass:** a 3-ad pod plays 1, 2, 3 by `sequence`, with one impression per ad.
 
@@ -104,6 +108,7 @@ Sources: IAB VAST 4.x error table (100–900, as listed in Google Ad Manager's "
 - Play/pause (remote and "Alexa, pause/play") act on the ad. Needs the manifest entries and `setMediaControlFocus` ([media-controls.md](media-controls.md)).
 - Block seek, fast-forward, rewind and speed changes during an ad.
 - If the app has its own key handler, ignore `playpause` there while an ad plays.
+- While the pre-roll loads, the content player still holds media controls focus: a play/pause then can start the content under the coming ad. Keep the content paused until the break ends (start it from the break's end, not from the key).
 
 **Pass:** `inputd-cli button_press KEY_PLAYPAUSE` pauses the ad, not the content; a second press resumes it.
 
