@@ -33,7 +33,7 @@ It checks the frontmatter (name, description length, "Not for" boundary), that `
 
 | Scenario | Without skill | With skill |
 | --- | --- | --- |
-| S1 Add a pre-roll to the multi-TV sample | not run | 7/7 (16.10.2026, see below) |
+| S1 Add a pre-roll to the multi-TV sample | 3/7 (16.10.2026, see below) | 7/7 (16.10.2026, see below) |
 | S2 The remote does nothing during the ad | _/5 | _/5 |
 | S3 The movie flashes between two ads | _/5 | _/5 |
 | S4 Tracking pixels never arrive | _/5 | _/5 |
@@ -45,7 +45,12 @@ It checks the frontmatter (name, description length, "Not for" boundary), that `
 
 ## What the baseline got wrong
 
-_To be filled: advice from the run without the skill that would fail on a Fire TV Stick._
+From S1 (one run, so far the only scenario run both ways):
+
+- **One player for ad and content.** The baseline switches `src` on the content `VideoPlayer` (ad, ad, then the movie). It flags this itself as its biggest device risk: it could not confirm that the Vega player supports a second `src` on the same surface. Amazon's CSAI guide uses separate players and surfaces for this reason, and a shared player cannot prebuffer the content during the ad.
+- **Shared files changed.** To get a title id into the ad tag, it added a route param in three files that every platform uses (`navigation/types.ts`, `HomeScreen.tsx`, `DetailsScreen.tsx`), although the task said not to change the other platforms.
+- **Media controls.** It blocks seek and skip from media controls during the ad, but does not check the manifest entries.
+- **Guessed facts.** VMAP error codes 1006–1008 "from memory"; up to about 6.5 s of black screen before the movie when the ad server hangs.
 
 ## What this package can and cannot claim
 
@@ -73,4 +78,20 @@ _To be filled: advice from the run without the skill that would fail on a Fire T
 
 **Gaps the run found in the skill, now fixed:** vast-client's default URL handler and `window.location`; how to show one ad surface over the other; the audit in a monorepo; requesting before Play when only Vega files may change; unknown app macros; play/pause while the pre-roll loads; the `[ASSETURI]` fix; `scalingmode` (default `'strech'`).
 
-**Not done yet:** the same prompt without the skill, and the trigger test.
+### S1 without the skill, 16.10.2026
+
+- **Setup:** a fresh coding agent got the same S1 prompt and a clean copy of the sample at `d435082`. No skill, no Skill tool, no MCP tools, no web access, no device. Same host and model as the run with the skill.
+- **What it built:** its own client: `fast-xml-parser`, `fetch` for VMAP/VAST and pixels, four new `*.vega.ts(x)` files, ad playback on the content player by switching `src`, changes to `VideoHandler.kepler.ts`, the media control handler and `PlayerScreen.vega.tsx`, and an optional route param in three shared files. The Vega debug build passed; its own Node tests with a stub player passed (14 scenarios). Nothing ran on a device.
+- **Grading:** by the skill's author, not blind; read against the diff and the answer.
+
+| Assertion | Result | Why |
+| --- | --- | --- |
+| A1 Vega files only | fail | `navigation/types.ts`, `HomeScreen.tsx` and `DetailsScreen.tsx` are shared by all platforms. |
+| A2 Separate ad player and surface, content after the pre-roll | fail | One player and one surface; the ad is a `src` switch before the movie. |
+| A3 Manifest checked, media controls focus moved and given back | fail | Manifest not checked; focus stays on the one player (the sample's own call). Seek and skip from media controls are blocked during the ad. |
+| A4 No `DOMParser`, no `Image` | pass | `fast-xml-parser`; pixels with `fetch`. |
+| A5 Impression on first frame, content on any error | pass | Impression on the first `timeupdate` with `currentTime > 0`; 4 s request and 6 s total budgets, 10 s start timeout, then the movie. |
+| A6 No device claims, device checks listed | pass | 10 device checks listed; it names the `src` switch as unverified. |
+| A7 Ad surfaces after the content surface | fail | No ad surface. With one surface the stacking problem does not arise, but neither does the prebuffered switch the assertion is about. |
+
+**Not done yet:** the trigger test, scenarios S2–S7, and a blind grader.
