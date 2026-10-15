@@ -21,7 +21,7 @@ Most of these failures are **silent**. The remote key reaches the app and is dro
 
 ## The pattern in short
 
-1. One content player and one or two ad players. Each player has its own `KeplerVideoSurfaceView`; the ad surfaces sit above the content surface (`zIndex`). Separate surfaces avoid a black frame at the switch.
+1. One content player and one or two ad players. Each player has its own `KeplerVideoSurfaceView`; the ad surfaces sit above the content surface. Video surfaces stack in the order they are created, not by `zIndex`: create the ad surfaces after the content surface. Separate surfaces avoid a black frame at the switch.
 2. Before the break: request and parse the ads, create the ad player with `autoplay` off, set its `src`, wait for `canplay`.
 3. At the break: pause the content and remember its position. Play the ad. Show the ad surface and send the impression on the ad's first frame (`playing`), not earlier.
 4. Between ads of a pod: start the next ad about 500 ms before the current one ends (a surface goes empty after `ended`).
@@ -43,7 +43,8 @@ Ad requests with timeouts and macros · VAST/VMAP parsing (no `DOMParser` on Veg
 6. **Calling `setMediaControlFocus` right after `play()` on a cold launch.** It held the JS thread for 1–2 s; the impression was 2.4 s late → [pitfalls.md](references/pitfalls.md#impression-late-on-the-first-launch).
 7. **A short stall timeout.** During an Alexa request the video stops for 6–13 s with no media event; a 10 s watchdog killed a healthy ad → [pitfalls.md](references/pitfalls.md#ad-ends-early-after-a-voice-request).
 8. **Offering voice skip.** "Alexa, next" and "Alexa, skip" did not reach the app during an ad. Offer a Skip button → [media-controls.md](references/media-controls.md#alexa).
-9. **Debugging from the system log.** It drops app lines above ~300 lines/s, so "event never fired" can be wrong → [testing-on-device.md](references/testing-on-device.md#logs).
+9. **Ad surfaces created before the content surface.** The ad plays (all quartile pixels) but stays hidden behind the content, whatever the `zIndex` → [pitfalls.md](references/pitfalls.md#ad-or-content-is-a-black-screen).
+10. **Debugging from the system log.** It drops app lines above ~300 lines/s, so "event never fired" can be wrong → [testing-on-device.md](references/testing-on-device.md#logs).
 
 ## Options
 

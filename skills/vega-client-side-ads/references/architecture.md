@@ -25,6 +25,7 @@ The guide does not mention media controls. Without them the remote and Alexa do 
 ```
 
 - Each surface hands its handle to one player through `onSurfaceViewCreated`; the player draws on it with `setSurfaceHandle(handle)` and lets go with `clearSurfaceHandle(handle)`.
+- **Create the ad surfaces after the content surface.** Video surfaces stack in the order they are created; `zIndex` does not reorder them. If the screen mounts its content surface late (for example after `loadedmetadata`), mount the ad surfaces only after the content surface's `onSurfaceViewCreated`. *Measured:* ad surfaces created first → the ad played with all quartile pixels but the screen was black (2 of 2 runs); created after → visible (5 of 5). (FL-19)
 - Keep the content surface mounted during the break. The paused content frame stays under the ad.
 - Bring the active ad surface on top only when that ad fires `playing`. Until then the viewer sees the content's last frame, not black.
 - Hide the app's own player controls and buffering spinner while an ad is on screen.
