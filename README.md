@@ -10,6 +10,7 @@ This repository contains skills that work across open-source frameworks, tools a
 |-------|-------------|
 | [vega-multi-tv-migration](skills/vega-multi-tv-migration/SKILL.md) | Migrate Vega OS (Fire TV) apps to multi-platform React Native monorepo supporting Android TV, Apple TV, and more |
 | [rn-tv-ui-best-practices](skills/rn-tv-ui-best-practices/SKILL.md) | React Native TV UI best practices for tvOS, Android TV, Fire TV, and Vega OS — focus management, layouts, typography, and remote/D-pad navigation |
+| [vega-client-side-ads](skills/vega-client-side-ads/SKILL.md) | Client-side VAST/VMAP video ads in React Native for Vega (Fire TV) apps — two-player pattern, tracking, media controls during ads, measured device pitfalls, and testing on a Fire TV Stick |
 
 ## Installation
 
