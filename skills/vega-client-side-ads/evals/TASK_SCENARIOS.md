@@ -12,6 +12,7 @@ Each scenario is a prompt an agent receives, plus the assertions a good answer m
 - A4. Provides an XML parser that runs without `DOMParser` and a tracking transport that runs without `Image` (or uses a library that does).
 - A5. Sends the impression on the ad's first frame, and on any ad error or timeout plays the content.
 - A6. Does not claim device behaviour it did not check; lists the device checks for the user.
+- A7. Creates the ad surfaces after the content surface: the sample mounts its content `KeplerVideoSurfaceView` only after `loadedmetadata`, and video surfaces stack in creation order, not by `zIndex`.
 
 ## S2. The remote does nothing during the ad
 

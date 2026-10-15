@@ -33,7 +33,7 @@ It checks the frontmatter (name, description length, "Not for" boundary), that `
 
 | Scenario | Without skill | With skill |
 | --- | --- | --- |
-| S1 Add a pre-roll to the multi-TV sample | _/6 | _/6 |
+| S1 Add a pre-roll to the multi-TV sample | _/7 | _/7 |
 | S2 The remote does nothing during the ad | _/5 | _/5 |
 | S3 The movie flashes between two ads | _/5 | _/5 |
 | S4 Tracking pixels never arrive | _/5 | _/5 |
