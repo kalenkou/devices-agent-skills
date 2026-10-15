@@ -71,19 +71,22 @@ if (typeof g.Image === 'undefined') {
 
 ## 6. VAST error codes the app sends
 
+Sources: IAB VAST 4.x error table (100–900, as listed in Google Ad Manager's "Understand VAST error codes"; 204/205 added in VAST 4.1) and the IAB VMAP 1.0 specification (1000–1008).
+
 | Code | When |
 | --- | --- |
 | 100 | XML parse error |
 | 101, 102 | Schema error; VAST version not supported |
-| 205 | Ad category blocked (VAST 4.1) |
+| 204, 205 | VAST 4.1: a required ad category is missing; the InLine ad's category is in the Wrapper's `BlockedAdCategories`. An app that blocks categories by its own rules can report 205 the same way |
 | 300–303 | Wrapper error: general, timeout, limit reached, no ad after wrappers |
 | 400 | General linear error (for example the player refused the file) |
 | 401, 402 | Media file not found; media file timeout |
 | 403 | No supported media file |
 | 405 | Problem displaying the media file (no first frame, stall) |
 | 900 | Undefined error |
+| 1000–1008 | VMAP: 1000 schema error, 1001 version not supported, 1002 parsing error, 1003 AdBreak type not supported, 1004 general ad response document error, 1005 template type not supported, 1006 extraction or parsing error, 1007 retrieval timeout, 1008 retrieval error (for example an HTTP error) |
 
-*Watchdogs we used:* no first frame in 5 s → 405; a player not ready in 8 s → skip the ad; buffering for 10 s after a `waiting` event → 405; time not moving for 30 s **with no event** → 405. The long silent timeout is for Alexa requests ([pitfalls.md](pitfalls.md#ad-ends-early-after-a-voice-request)).
+*Watchdogs we used:* no first frame in 5 s → 405; a player not ready in 8 s → 402 and skip the ad; buffering for 10 s after a `waiting` event → 405; time not moving for 30 s **with no event** → 405. The long silent timeout is for Alexa requests ([pitfalls.md](pitfalls.md#ad-ends-early-after-a-voice-request)).
 
 **Pass:** every failed ad sends one error pixel and the content goes on. No error stops playback.
 
