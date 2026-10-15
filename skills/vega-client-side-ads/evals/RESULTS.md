@@ -27,7 +27,7 @@ It checks the frontmatter (name, description length, "Not for" boundary), that `
 
 | Host / model | Date | Should trigger: loaded | Should not trigger: not loaded |
 | --- | --- | --- | --- |
-| _to be filled_ | | _/12 | _/10 |
+| fresh agent, smaller model than the S1 runs | 16.10.2026 | 12/12 | 10/10 |
 
 ## Task scenarios
 
@@ -94,4 +94,11 @@ From S1 (one run, so far the only scenario run both ways):
 | A6 No device claims, device checks listed | pass | 10 device checks listed; it names the `src` switch as unverified. |
 | A7 Ad surfaces after the content surface | fail | No ad surface. With one surface the stacking problem does not arise, but neither does the prebuffered switch the assertion is about. |
 
-**Not done yet:** the trigger test, scenarios S2–S7, and a blind grader.
+### Trigger test, 16.10.2026
+
+- **Setup:** a fresh agent got two files only: the `name` and `description` of 16 skills (the 3 skills of this repository and the 13 Amazon Devices Builder Tools skills a Vega developer typically has installed, in shuffled order), and the 22 prompts of [TRIGGER_PROMPTS.md](TRIGGER_PROMPTS.md) shuffled, without the two lists. It named the skills it would load for each prompt. No Skill tool, no MCP, no web.
+- **Scoring:** by a script against the hidden list, so no judgement by the author.
+- **Result:** loaded `vega-client-side-ads` for 12 of 12 "should trigger" prompts and for none of the 10 "should not trigger" prompts. For "How do I play VMAP mid-rolls on Fire TV with Vega OS and the w3cmedia VideoPlayer?" it also loaded `amazon-devices-vega-media-player`, which fits. The near miss it named as hard: writing a VAST 4 XML file by hand (it chose none).
+- **Limits:** one run, one model; a simulation from descriptions, not a particular host's skill router.
+
+**Not done yet:** scenarios S2–S7, and a blind grader.
