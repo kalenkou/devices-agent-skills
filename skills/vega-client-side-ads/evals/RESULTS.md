@@ -1,6 +1,6 @@
 # Results
 
-> **To be filled after the evaluation run.** No model results are reported yet. The tables below are empty on purpose; do not read them as scores.
+> Results so far: the repository check, the trigger test and the task scenarios that were run. Empty cells were not run; do not read them as scores.
 
 ## Repository check
 
@@ -14,7 +14,7 @@ It checks the frontmatter (name, description length, "Not for" boundary), that `
 
 | Date | Command output |
 | --- | --- |
-| _to be filled_ | _to be filled_ |
+| 17.10.2026 | `vega-client-side-ads checks passed: 74` |
 
 ## Protocol for the model evaluation
 
