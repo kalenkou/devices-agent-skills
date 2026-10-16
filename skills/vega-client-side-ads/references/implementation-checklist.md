@@ -48,6 +48,7 @@ if (typeof g.Image === 'undefined') {
 - Without VMAP, a list of `{ offset, vastUrl }` works the same way.
 - A break that is not ready in time is skipped; the content goes on.
 - Mark mid-rolls on the app's timeline and show a short countdown ("Ad in 5") only when the break's ads are loaded.
+- The VMAP alone says how many breaks there are and where. It can be read on the title's page, so the app can show the breaks before Play (a break map, or "4 ad breaks · first: 1 ad, 10 s"). Convert percentage offsets with the content duration.
 - VMAP has its own error codes (1000 range) and tracking (`breakStart`, `breakEnd`, `error`).
 
 **Pass:** pre-roll, one mid-roll and post-roll play in order; a seek over a break plays that break.
@@ -125,6 +126,7 @@ Sources: IAB VAST 4.x error table (100–900, as listed in Google Ad Manager's "
 - Show "Ad", the position in the pod and time left ("Ad 1 of 3 · 0:12"). Keep it inside the TV safe area.
 - Keep D-pad focus on the Skip button during an ad; return focus to the player UI after.
 - For VoiceView, announce each ad with its length and when Skip comes.
+- If the app replaces a library's overlay with its own, keep the library's VoiceView announcements; the custom overlay often drops them.
 
 ## 11. Loudness (optional)
 
