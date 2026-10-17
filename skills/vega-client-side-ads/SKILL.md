@@ -86,7 +86,8 @@ Symptom
 ├─ Content does not resume after the break    → pitfalls.md + architecture.md (Resume)
 └─ Event "never fired" in the log             → testing-on-device.md (Logs)
 
-Proving it works                              → testing-on-device.md
+Proving it works (keys: inputd-cli; screens:   → testing-on-device.md
+  gwsi-tool-screenshooter; not the Virtual Device)
 ```
 
 ## Output style

@@ -34,14 +34,14 @@ It checks the frontmatter (name, description length, "Not for" boundary), that `
 | Scenario | Without skill | With skill |
 | --- | --- | --- |
 | S1 Add a pre-roll to the multi-TV sample | 3/7 (16.10.2026, see below) | 7/7 (16.10.2026, see below) |
-| S2 The remote does nothing during the ad | _/5 | _/5 |
-| S3 The movie flashes between two ads | _/5 | _/5 |
-| S4 Tracking pixels never arrive | _/5 | _/5 |
-| S5 Black screen with an http ad | _/5 | _/5 |
-| S6 The ad is cut off after Alexa | _/5 | _/5 |
-| S7 Prove Home and Back on a real stick | _/5 | _/5 |
-| **Assertions passed** | **_/36** | **_/36** |
-| **Scenarios fully passed** | **_/7** | **_/7** |
+| S2 The remote does nothing during the ad | 2/5 (17.10.2026) | 5/5 (17.10.2026) |
+| S3 The movie flashes between two ads | 0/5 (17.10.2026) | 5/5 (17.10.2026) |
+| S4 Tracking pixels never arrive | 1/5 (17.10.2026) | 5/5 (17.10.2026) |
+| S5 Black screen with an http ad | 1/5 (17.10.2026) | 5/5 (17.10.2026) |
+| S6 The ad is cut off after Alexa | 2/5 (17.10.2026) | 5/5 (17.10.2026) |
+| S7 Prove Home and Back on a real stick | 1/5 (17.10.2026) | 3/5 (17.10.2026) |
+| **Assertions passed** | **10/37** | **35/37** |
+| **Scenarios fully passed** | **0/7** | **6/7** |
 
 ## What the baseline got wrong
 
@@ -101,4 +101,25 @@ From S1 (one run, so far the only scenario run both ways):
 - **Result:** loaded `vega-client-side-ads` for 12 of 12 "should trigger" prompts and for none of the 10 "should not trigger" prompts. For "How do I play VMAP mid-rolls on Fire TV with Vega OS and the w3cmedia VideoPlayer?" it also loaded `amazon-devices-vega-media-player`, which fits. The near miss it named as hard: writing a VAST 4 XML file by hand (it chose none).
 - **Limits:** one run, one model; a simulation from descriptions, not a particular host's skill router.
 
-**Not done yet:** scenarios S2–S7, and a blind grader.
+### S2–S7 with and without the skill, 17.10.2026
+
+- **Setup:** two fresh agents, same host and model (a smaller model than the S1 runs), got the six questions of S2–S7 without the assertions. One got only the questions (no files, no web, no skills). The other got the questions and this skill without the `evals/` folder. No device.
+- **Grading:** blind. A third agent got the assertions and the two answer sets labelled A and B, without being told which one had the skill, and graded each assertion pass/fail. An assertion passes only when the answer states it clearly enough to act on.
+- **Result:** without the skill 7/30, with the skill 28/30. Scenarios fully passed: 0/6 and 5/6.
+
+| Scenario | Without | With | Failed with the skill |
+| --- | --- | --- | --- |
+| S2 Remote does nothing | 2/5 | 5/5 | – |
+| S3 Movie flashes | 0/5 | 5/5 | – |
+| S4 Pixels never arrive | 1/5 | 5/5 | – |
+| S5 Black screen, http ad | 1/5 | 5/5 | – |
+| S6 Ad cut off after Alexa | 2/5 | 5/5 | – |
+| S7 Home and Back on a stick | 1/5 | 3/5 | A3 named no screenshot tool; A5 did not say the Virtual Device is not enough |
+
+**What the baseline got wrong (grader's notes):** Android tools on Vega (`adb`, `input keyevent KEYCODE_HOME`, `logcat`, `screencap`); "keep ad 1's last frame visible" (the surface goes empty after `ended`); starting ad 2 only 100–300 ms early (less than the measured `play()` → `playing` time); "Vega blocks cleartext HTTP" (only w3cmedia refuses `http://`; `fetch` works); invented "media-session permissions" instead of the manifest category and `interface.provider`; "audio focus ducking" as the cause of the voice stall.
+
+**Gap the run found in the skill, now fixed:** the decision tree now names the key and screenshot tools and says the Virtual Device is not enough, next to "Proving it works".
+
+**Limits:** one run per condition; the two answering agents and the grader are the same model family; the grader saw only the rubric and the answers.
+
+**Not done yet:** S1 with a blind grader; a second model.
