@@ -92,9 +92,9 @@ During an ad, also ignore seek, fast-forward, rewind and speed commands, from th
 - During any Alexa request the video stops advancing with no media event. See [pitfalls.md](pitfalls.md#ad-ends-early-after-a-voice-request).
 - *Measured once:* "Alexa, pause/play" did nothing in **any** app on the stick, YouTube included, until the stick was restarted. Check another app before debugging yours.
 
-## The manifest check is not stable
+## The manifest check is not always stable
 
-*Measured:* the same build with the same `manifest.toml`, launched 13 times, logged `checkClientManifestForKMC: … has KMC: true` 9 times and `false` 4 times, with no reason. When a media controls test fails, look for this line before changing code, and run the test again.
+*Measured:* on 11 October 2026, 4 of 20 launches with the media controls entry in `manifest.toml` logged `checkClientManifestForKMC: … has KMC: false`, with no reason. Those launches never set up a `MediaControlHandler`. From 12 to 22 October all 175 launches logged `true`. When a media controls test fails, look for this line before changing code, and run the test again.
 
 ## Virtual Device keys
 

@@ -6,7 +6,7 @@ Each entry was found and measured while building client-side ads on a **Fire TV 
 
 - **Cause:** media controls need two steps: the manifest entries (`com.amazon.category.kepler.media` category and the `IMediaPlaybackServer` interface provider) **and** `setMediaControlFocus` on the ad player at each switch. With one missing, 0 commands are delivered and nothing is logged except `isSessionInForeground :0`. (FL-03)
 - **Fix:** both steps, see [media-controls.md](media-controls.md). Give focus back to the content player after the break.
-- **If it still fails:** look for `checkClientManifestForKMC: … has KMC: false` in the log; the same manifest gave `false` in 4 of 13 launches (FL-18). Check that Alexa works in another app; once it worked nowhere until the stick was restarted.
+- **If it still fails:** look for `checkClientManifestForKMC: … has KMC: false` in the log. It said `false` in 4 of 20 launches on 11 October, then `true` in all 175 launches from 12 to 22 October (FL-18). Check that Alexa works in another app. Once it worked nowhere until the stick was restarted.
 
 ## Ad pauses and resumes at once, or resume does not stick
 
